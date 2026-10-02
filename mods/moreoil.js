@@ -8,19 +8,26 @@ elements.crude_oil = {
     state: "liquid",
 };
 
-// Pure, ultra-stable temperature boiling loop
+// Diese Logik verbraucht das Rohöl langsam und teilt es auf
 elements.crude_oil.tick = function(pixel) {
     if (Math.random() < 0.15) {
+        // Wir prüfen, ob direkt über dem Öl-Pixel Platz für Gas ist
         if (isEmpty(pixel.x, pixel.y - 1)) {
             if (pixel.temp >= 350) {
+                // Bei extremer Hitze spaltet sich das Rohöl auf:
+                // Der Dampf entweicht nach oben, und das Öl-Pixel selbst WIRD zu Schweröl!
                 createPixel("diesel_vapor", pixel.x, pixel.y - 1);
                 changePixel(pixel, "heavy_fuel_oil");
             } else if (pixel.temp >= 200) {
                 createPixel("kerosene_vapor", pixel.x, pixel.y - 1);
+                // Um das Rohöl zu verbrauchen, wandeln wir es leicht in Schweröl um (Fraktionierung)
+                if (Math.random() < 0.3) changePixel(pixel, "heavy_fuel_oil");
             } else if (pixel.temp >= 120) {
                 createPixel("gasoline_vapor", pixel.x, pixel.y - 1);
+                if (Math.random() < 0.2) changePixel(pixel, "heavy_fuel_oil");
             } else if (pixel.temp >= 45) {
                 createPixel("petroleum_gas", pixel.x, pixel.y - 1);
+                if (Math.random() < 0.1) changePixel(pixel, "heavy_fuel_oil");
             }
         }
     }
@@ -35,6 +42,7 @@ elements.petroleum_gas = {
     category: "gases",
     state: "gas",
     density: 1,
+    cooldown: 5,
     tempHigh: 120,
     stateHigh: "gasoline_vapor"
 };
@@ -45,6 +53,7 @@ elements.liquid_gasoline = {
     behavior: behaviors.LIQUID,
     category: "liquids",
     density: 740,
+    viscosity: 100,
     tempHigh: 120,
     stateHigh: "gasoline_vapor"
 };
@@ -53,6 +62,7 @@ elements.gasoline_vapor = {
     behavior: behaviors.GAS,
     category: "gases",
     density: 8, 
+    cooldown: 4,
     tempLow: 115, 
     stateLow: "liquid_gasoline"
 };
@@ -63,6 +73,7 @@ elements.liquid_kerosene = {
     behavior: behaviors.LIQUID,
     category: "liquids",
     density: 810,
+    viscosity: 200,
     tempHigh: 200,
     stateHigh: "kerosene_vapor"
 };
@@ -71,6 +82,7 @@ elements.kerosene_vapor = {
     behavior: behaviors.GAS,
     category: "gases",
     density: 15,
+    cooldown: 3,
     tempLow: 195, 
     stateLow: "liquid_kerosene"
 };
@@ -81,6 +93,7 @@ elements.liquid_diesel = {
     behavior: behaviors.LIQUID,
     category: "liquids",
     density: 850,
+    viscosity: 400,
     tempHigh: 350,
     stateHigh: "diesel_vapor"
 };
@@ -89,6 +102,7 @@ elements.diesel_vapor = {
     behavior: behaviors.GAS,
     category: "gases",
     density: 25, 
+    cooldown: 2,
     tempLow: 345, 
     stateLow: "liquid_diesel"
 };
@@ -102,6 +116,7 @@ elements.heavy_fuel_oil = {
     density: 920,
 };
 
+// Das Schweröl kocht am Boden weiter, bis es zu festem Bitumen austrocknet
 elements.heavy_fuel_oil.tick = function(pixel) {
     if (pixel.temp >= 450 && Math.random() < 0.1) {
         changePixel(pixel, "bitumen");
