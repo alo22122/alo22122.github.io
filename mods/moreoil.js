@@ -7,7 +7,7 @@ elements.oil_shale = {
     behavior: behaviors.WALL,
     category: "solids",
     state: "solid",
-    tempHigh: 400,
+    tempHigh: 500,
     stateHigh: "ash"
 };
 
