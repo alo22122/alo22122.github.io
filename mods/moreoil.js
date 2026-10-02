@@ -12,7 +12,7 @@ elements.oil_shale = {
 };
 
 elements.oil_shale.tick = function(pixel) {
-    if (pixel.temp >= 400 && Math.random() < 0.2) {
+    if (pixel.temp >= 20 && Math.random() < 0.2) {
         var randomDirX = Math.floor(Math.random() * 3) - 1;
         var randomDirY = Math.floor(Math.random() * 2);
         var tx = pixel.x + randomDirX;
