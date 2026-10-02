@@ -127,11 +127,12 @@ elements.liquid_biodiesel = {
     color: "#facc15",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 55,
+    density: 40,
     viscosity: 25,
     burn: 90,
     burnTime: 100,
     fireColor: "#fbbf24",
+    state: "gas",
     reactions: {
         "fire": { elem1: "fire", elem2: "steam", chance: 0.2 }
     }
@@ -162,6 +163,7 @@ elements.liquid_gasoline = {
     burn: 150,
     burnTime: 15,
     fireColor: "#ff4400",
+    state: "gas",
     reactions: {
         "fire": { elem1: "explosion", chance: 0.4 },
         "spark": { elem1: "explosion", chance: 0.7 },
@@ -191,13 +193,14 @@ elements.liquid_kerosene = {
     color: "#b0d4de",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 30,
+    density: 25,
     viscosity: 15,
     tempHigh: 200,
     stateHigh: "kerosene_vapor",
     burn: 110,
     burnTime: 45,
     fireColor: "#ffaa00",
+    state: "gas",
     reactions: {
         "fire": { elem1: "fire", elem2: "steam", chance: 0.3 }
     }
@@ -223,13 +226,14 @@ elements.liquid_diesel = {
     color: "#7fa682",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 60,
+    density: 50,
     viscosity: 30,
     tempHigh: 350,
     stateHigh: "diesel_vapor",
     burn: 80,
     burnTime: 120,
     fireColor: "#ff7700",
+    state: "gas",
     reactions: {
         "fire": { elem1: "smoke", elem2: "exhaust_fumes", chance: 0.25 }
     }
@@ -245,8 +249,6 @@ elements.diesel_vapor = {
     stateLow: "liquid_diesel",
     noBreak: true,
     reactions: {
-        // HYDROCRACKING REZEPT: Wenn Diesel-Dampf auf Wasserdampf (steam) trifft,
-        // wird er ohne Filter-Maschine direkt zu wertvollem Benzin-Dampf gecrackt!
         "steam": { elem1: "gasoline_vapor", elem2: "gasoline_vapor", chance: 0.35 }
     }
 };
@@ -373,11 +375,12 @@ elements.exhaust_fumes = {
         "water": { elem1: "ammonium_nitrate_fertilizer", elem2: "ammonium_nitrate_fertilizer", chance: 0.05 }
     }
 };
+
 elements.ammonium_nitrate_fertilizer = {
-color: "#f3f4f6",
-behavior: behaviors.POWDER,
-category: "solids",
-state: "solid",
+    color: "#f3f4f6",
+    behavior: behaviors.POWDER,
+    category: "solids",
+    state: "solid",
 reactions: {
 "soil": { elem1: "grass", elem2: "soil", chance: 0.5 },
 "dirt": { elem1: "grass", elem2: "dirt", chance: 0.5 }
