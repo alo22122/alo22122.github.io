@@ -31,7 +31,7 @@ elements.crude_oil = {
     color: "#14110f",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    viscosity: 100,
+    viscosity: 10,
     density: 500,
     state: "liquid",
     reactions: {
@@ -70,7 +70,7 @@ elements.hydrofluoric_acid = {
     behavior: behaviors.LIQUID,
     category: "liquids",
     density: 450,
-    viscosity: 10,
+    viscosity: 5,
     state: "liquid",
     reactions: {
         "plant": { elem1: "fire", elem2: "ash", chance: 0.3 },
@@ -127,12 +127,12 @@ elements.liquid_biodiesel = {
     color: "#facc15",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 40,
-    viscosity: 25,
+    density: 250,
+    viscosity: 2,
     burn: 90,
     burnTime: 100,
     fireColor: "#fbbf24",
-    state: "gas",
+    state: "liquid",
     reactions: {
         "fire": { elem1: "fire", elem2: "steam", chance: 0.2 }
     }
@@ -156,14 +156,14 @@ elements.liquid_gasoline = {
     color: "#e6c963",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 10,
-    viscosity: 5,
+    density: 100,
+    viscosity: 1,
     tempHigh: 120,
     stateHigh: "gasoline_vapor",
     burn: 150,
     burnTime: 15,
     fireColor: "#ff4400",
-    state: "gas",
+    state: "liquid",
     reactions: {
         "fire": { elem1: "explosion", chance: 0.4 },
         "spark": { elem1: "explosion", chance: 0.7 },
@@ -193,14 +193,14 @@ elements.liquid_kerosene = {
     color: "#b0d4de",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 25,
-    viscosity: 15,
+    density: 200,
+    viscosity: 1,
     tempHigh: 200,
     stateHigh: "kerosene_vapor",
     burn: 110,
     burnTime: 45,
     fireColor: "#ffaa00",
-    state: "gas",
+    state: "liquid",
     reactions: {
         "fire": { elem1: "fire", elem2: "steam", chance: 0.3 }
     }
@@ -226,14 +226,14 @@ elements.liquid_diesel = {
     color: "#7fa682",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 50,
-    viscosity: 30,
+    density: 300,
+    viscosity: 2,
     tempHigh: 350,
     stateHigh: "diesel_vapor",
     burn: 80,
     burnTime: 120,
     fireColor: "#ff7700",
-    state: "gas",
+    state: "liquid",
     reactions: {
         "fire": { elem1: "smoke", elem2: "exhaust_fumes", chance: 0.25 }
     }
@@ -261,8 +261,8 @@ elements.heavy_fuel_oil = {
     color: "#24201c",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    viscosity: 50,
-    density: 200,
+    viscosity: 2,
+    density: 700,
     reactions: {
         "sulfur": { elem1: "bunker_fuel", elem2: "bunker_fuel", chance: 0.15 }
     }
@@ -278,8 +278,8 @@ elements.bunker_fuel = {
     color: "#1c1816",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    viscosity: 800,
-    density: 950,
+    viscosity: 5,
+    density: 850,
     burn: 50,
     burnTime: 400,
     fireColor: "#9a3412",
@@ -292,8 +292,8 @@ elements.bitumen = {
     color: "#0a0908",
     behavior: behaviors.LIQUID, 
     category: "solids",
-    viscosity: 5000,          
-    density: 1000,
+    viscosity: 10,          
+    density: 1200,
     state: "liquid",
     tempHigh: 500,
     stateHigh: "petroleum_coke",
@@ -316,7 +316,7 @@ elements.petroleum_coke = {
     behavior: behaviors.POWDER,
     category: "solids",
     state: "solid",
-    density: 85,
+    density: 900,
     burn: 110,
     burnTime: 250,
     fireColor: "#e11d48"
@@ -326,8 +326,8 @@ elements.solvent_naphtha = {
     color: "#e2e8f0",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 150,
-    viscosity: 2,
+    density: 400,
+    viscosity: 1,
     state: "liquid"
 };
 
@@ -339,7 +339,7 @@ elements.plastic_slurry = {
     color: "#d9e3db",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 90,
+    density: 350,
     tempLow: 50,
     stateLow: "petroleum_plastic"
 };
