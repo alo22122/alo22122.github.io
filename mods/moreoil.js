@@ -1,24 +1,25 @@
 // ==========================================
-// 1. DIE ROHSTOFFE & FLÜSSIGKEITEN
+// 1. DIE REAKTIONSLOSE WAND (DESTRUCTION PROTECTION)
+// ==========================================
+// Gase in Sandboxels können durch Hitze Ziegelsteine zerstören. 
+// Wir fügen allen neuen Gasen die Eigenschaft "noBreak: true" hinzu.
+// Dadurch steigen die Dämpfe friedlich auf, ohne deine Turmwände zu sprengen!
+
+// ==========================================
+// 2. DAS ROHGEMISCH & DIE VERDAMPFUNG
 // ==========================================
 
-// --- Rohöl (Crude Oil) ---
 elements.crude_oil = {
-    color: "#1a130e",
+    color: "#14110f",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    viscosity: 150,
-    density: 500,
+    viscosity: 100,
+    density: 500, // Mittlere Dichte, damit Rückstände perfekt nach unten sinken
     state: "liquid",
-    reactions: {
-        // Ölpest-Mechanik: Wenn Rohöl Wasser oder Algen berührt, tötet es das Leben
-        "water": { elem1: "crude_oil", elem2: "crude_oil", chance: 0.05 },
-        "algae": { elem1: "crude_oil", elem2: "mud", chance: 0.3 },
-        "sulfur": { elem1: "crude_oil", elem2: "sour_gas", chance: 0.1 } // Schwefel macht es zu saurem Gas
-    }
 };
 
-// Fraktionierungs-Tick für das Rohöl
+// Ultrastabile Verdampfungs-Logik: Das Öl verschwindet langsam Pixel für Pixel
+// und hinterlässt am Boden schweres Schweröl
 elements.crude_oil.tick = function(pixel) {
     if (Math.random() < 0.15) {
         if (isEmpty(pixel.x, pixel.y - 1)) {
@@ -40,10 +41,13 @@ elements.crude_oil.tick = function(pixel) {
 };
 
 // ==========================================
-// 2. DIE DESTILLATE & IHRE VERBRENNUNG
+// 3. DIE TREIBSTOFFE & DIE NATIVE SORTIERUNG
 // ==========================================
+// Wir nutzen extrem weit gestaffelte Dichten (density).
+// Dadurch rutschen leichte Flüssigkeiten sofort nach oben durch (Mayo-Trick)
+// und schwere Stoffe sinken unaufhaltsam nach unten ab!
 
-// --- Flüssiggas (Petroleum Gas) ---
+// --- Petroleum Gas (Flüssiggas precursor) ---
 elements.petroleum_gas = {
     color: "#f0f5da",
     behavior: behaviors.GAS,
@@ -55,22 +59,22 @@ elements.petroleum_gas = {
     stateHigh: "gasoline_vapor",
     burn: 120,
     burnTime: 10,
-    fireColor: "#0066ff", // Brennt heiß und blau!
+    fireColor: "#0066ff", // Brennt heiß und blau
+    noBreak: true,
     reactions: {
         "fire": { elem1: "fire", elem2: "carbon_dioxide", chance: 0.5 },
         "spark": { elem1: "fire", elem2: "carbon_dioxide", chance: 0.8 },
-        "acid": { elem1: "plastic_slurry", elem2: "acid", chance: 0.08 }, // Plastik-Herstellung
+        "acid": { elem1: "plastic_slurry", elem2: "acid", chance: 0.08 }, // Plastik-Synthese
         "chlorine": { elem1: "plastic_slurry", elem2: "hydrochloric_acid", chance: 0.08 }
-    },
-    noBreak: true
+    }
 };
 
-// --- Benzin (Gasoline) ---
+// --- Benzin (Liquid Gasoline) ---
 elements.liquid_gasoline = {
     color: "#e6c963",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 10, // Extrem leicht, schwimmt auf ALLEM (Mayo-Trick)
+    density: 10,  // Extrem leicht, schwimmt auf absolut ALLEM
     viscosity: 5,
     tempHigh: 120,
     stateHigh: "gasoline_vapor",
@@ -78,7 +82,7 @@ elements.liquid_gasoline = {
     burnTime: 15,
     fireColor: "#ff4400",
     reactions: {
-        "fire": { elem1: "explosion", chance: 0.4 }, // Hochentzündliche Verpuffung!
+        "fire": { elem1: "explosion", chance: 0.4 }, // Löst heftige Verpuffungen aus!
         "spark": { elem1: "explosion", chance: 0.7 },
         "sulfur": { elem1: "petroleum_rubber", elem2: "petroleum_rubber", chance: 0.15 } // Gummi-Synthese
     }
@@ -94,11 +98,11 @@ elements.gasoline_vapor = {
     burn: 160,
     burnTime: 5,
     fireColor: "#ff3300",
+    noBreak: true,
     reactions: {
         "fire": { elem1: "explosion", chance: 0.8 },
         "spark": { elem1: "explosion", chance: 0.95 }
-    },
-    noBreak: true
+    }
 };
 
 // --- Kerosin (Flugtreibstoff) ---
@@ -106,7 +110,7 @@ elements.liquid_kerosene = {
     color: "#b0d4de",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 30,
+    density: 30, // Sinkt unter Benzin, schwimmt auf Diesel
     viscosity: 15,
     tempHigh: 200,
     stateHigh: "kerosene_vapor",
@@ -114,8 +118,7 @@ elements.liquid_kerosene = {
     burnTime: 45,
     fireColor: "#ffaa00",
     reactions: {
-        // Erzeugt enorm viel heißen Dampf und Auftrieb beim Verbrennen!
-        "fire": { elem1: "fire", elem2: "steam", chance: 0.3 }
+        "fire": { elem1: "fire", elem2: "steam", chance: 0.3 } // Erzeugt extrem viel Dampf/Auftrieb
     }
 };
 elements.kerosene_vapor = {
@@ -128,10 +131,10 @@ elements.kerosene_vapor = {
     stateLow: "liquid_kerosene",
     burn: 120,
     burnTime: 20,
+    noBreak: true,
     reactions: {
         "fire": { elem1: "fire", elem2: "steam", chance: 0.5 }
-    },
-    noBreak: true
+    }
 };
 
 // --- Diesel ---
@@ -139,7 +142,7 @@ elements.liquid_diesel = {
     color: "#7fa682",
     behavior: behaviors.LIQUID,
     category: "liquids",
-    density: 60,
+    density: 60, // Sinkt unter Kerosin, schwimmt auf Schweröl
     viscosity: 30,
     tempHigh: 350,
     stateHigh: "diesel_vapor",
@@ -147,8 +150,7 @@ elements.liquid_diesel = {
     burnTime: 120, // Brennt sehr lange
     fireColor: "#ff7700",
     reactions: {
-        // Ruß- und Abgas-Entwicklung
-        "fire": { elem1: "smoke", elem2: "exhaust_fumes", chance: 0.25 }
+        "fire": { elem1: "smoke", elem2: "exhaust_fumes", chance: 0.25 } // Erzeugt Ruß und Abgas
     }
 };
 elements.diesel_vapor = {
@@ -163,7 +165,7 @@ elements.diesel_vapor = {
 };
 
 // ==========================================
-// 3. SCHWERÖL, BITUMEN & ASPHALT
+// 4. DIE SCHWEREN RÜCKSTÄNDE, ASPHALT & SINKEN
 // ==========================================
 
 elements.heavy_fuel_oil = {
@@ -171,7 +173,7 @@ elements.heavy_fuel_oil = {
     behavior: behaviors.LIQUID,
     category: "liquids",
     viscosity: 50,
-    density: 200,
+    density: 200, // Schwerer als alle Treibstoffe, rutscht nach unten weg
 };
 
 elements.heavy_fuel_oil.tick = function(pixel) {
@@ -185,10 +187,10 @@ elements.bitumen = {
     behavior: behaviors.LIQUID, 
     category: "solids",
     viscosity: 5000,          
-    density: 1000, 
+    density: 1000, // Der absolute Bodenwert – sinkt unaufhaltsam durch alles hindurch
     state: "liquid",
     reactions: {
-        "sand": { elem1: "asphalt_pavement", elem2: "asphalt_pavement", chance: 0.2 }, // Straßenbau
+        "sand": { elem1: "asphalt_pavement", elem2: "asphalt_pavement", chance: 0.2 }, // Straßenbau-Asphalt
         "gravel": { elem1: "asphalt_pavement", elem2: "asphalt_pavement", chance: 0.2 }
     }
 };
@@ -201,7 +203,7 @@ elements.asphalt_pavement = {
 };
 
 // ==========================================
-// 4. INDUSTRIE- & SYNTHETIK-ELEMENTE
+// 5. INDUSTRIELLE CHEMIEREPZEPTE & FILTRATION
 // ==========================================
 
 // --- Plastik ---
@@ -232,7 +234,7 @@ elements.petroleum_rubber = {
     burnTime: 80
 };
 
-// --- Katalysator-Block (Cracking) ---
+// --- Katalysator-Block zum Cracken ---
 elements.cracking_catalyst = {
     color: "#9ca3af",
     behavior: behaviors.WALL,
@@ -245,35 +247,35 @@ elements.cracking_catalyst = {
 };
 
 // ==========================================
-// 5. UMWELT- & UMWELTVERSCHMUTZUNGS-ELEMENTE
+// 6. DÜNGER, SOUR GAS & EFFEKTE
 // ==========================================
 
-// --- Abgase (Exhaust Fumes) ---
+// --- Giftige Industrieabgase ---
 elements.exhaust_fumes = {
     color: "#6b7280",
     behavior: behaviors.GAS,
     category: "gases",
     state: "gas",
     density: 2,
+    noBreak: true,
     reactions: {
-        // Tötet Pflanzen ab
+        // Zerstört die Umwelt / Pflanzenwelt
         "plant": { elem1: "smoke", elem2: "dead_plant", chance: 0.1 },
         "grass": { elem1: "smoke", elem2: "dirt", chance: 0.1 },
         "wood": { elem1: "smoke", elem2: "ash", chance: 0.05 },
-        // Kunstdünger-Synthese mit Wasser
+        // Kunstdünger-Herstellung bei Kontakt mit Wasser
         "water": { elem1: "ammonium_nitrate_fertilizer", elem2: "ammonium_nitrate_fertilizer", chance: 0.05 }
-    },
-    noBreak: true
+    }
 };
 
-// --- Kunstdünger (Fertilizer) ---
+// --- Kunstdünger ---
 elements.ammonium_nitrate_fertilizer = {
     color: "#f3f4f6",
     behavior: behaviors.POWDER,
     category: "solids",
     state: "solid",
     reactions: {
-        // Lässt Pflanzen bei Kontakt gigantisch wachsen/sprießen
+        // Lässt den Boden rasant zu grünem Gras sprießen!
         "soil": { elem1: "grass", elem2: "soil", chance: 0.5 },
         "dirt": { elem1: "grass", elem2: "dirt", chance: 0.5 }
     }
@@ -286,9 +288,9 @@ elements.sour_gas = {
     category: "gases",
     state: "gas",
     density: 1.5,
+    noBreak: true,
     reactions: {
-        // Verwandelt sich mit Wasser/Regen in ätzenden sauren Regen!
+        // Wenn sauberes Gas mit Wasser/Regen reagiert, entsteht verätzende Säure!
         "water": { elem1: "acid", elem2: "acid", chance: 0.3 }
-    },
-    noBreak: true
+    }
 };
